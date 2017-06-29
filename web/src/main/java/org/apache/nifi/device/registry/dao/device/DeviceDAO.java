@@ -1,7 +1,5 @@
 package org.apache.nifi.device.registry.dao.device;
 
-import java.util.List;
-
 import org.apache.nifi.device.registry.api.device.Device;
 import org.apache.nifi.device.registry.api.device.MiNiFiCPPDevice;
 import org.apache.nifi.device.registry.api.device.MiNiFiJavaDevice;
@@ -14,6 +12,8 @@ import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 import org.skife.jdbi.v2.sqlobject.Transaction;
 import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
+
+import java.util.List;
 
 
 /**
