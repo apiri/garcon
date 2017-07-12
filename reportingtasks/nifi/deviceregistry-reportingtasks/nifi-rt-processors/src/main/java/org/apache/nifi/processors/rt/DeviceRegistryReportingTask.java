@@ -1,16 +1,6 @@
 package org.apache.nifi.processors.rt;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -28,7 +18,16 @@ import org.apache.nifi.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -92,16 +91,20 @@ public class DeviceRegistryReportingTask
         //Build NiFiDevice object for payload.
         NiFiDevice device = new NiFiDevice();
         device = populateNetworkingInfo(device);
+        logger.info("Populating memory info");
         device = populateMemoryInfo(device);
+        logger.info("Populating disk info");
         device = populateDiskSpaceInfo(reportingContext, device);
 
         report(host, port, device);
     }
 
-    private boolean report(String host, String port, NiFiDevice device) {
+    protected boolean report(String host, String port, NiFiDevice device) {
 
         try {
-            String url = "http://" + host + ":" + port + "/api/v1/device";
+            String url = "http://" + host + ":" + port + "/api/v1/device/device";
+
+            logger.info("Attempting to report information to {}", url);
 
             HttpClient httpClient = HttpClientBuilder.create().build();
             HttpPost postRequest = new HttpPost(url);
@@ -130,7 +133,7 @@ public class DeviceRegistryReportingTask
     }
 
 
-    private NiFiDevice populateNetworkingInfo(NiFiDevice device) {
+    protected NiFiDevice populateNetworkingInfo(NiFiDevice device) {
 
         InetAddress ip;
         try {
@@ -193,15 +196,15 @@ public class DeviceRegistryReportingTask
         return device;
     }
 
-    private NiFiDevice populateMemoryInfo(NiFiDevice device) {
+    protected NiFiDevice populateMemoryInfo(NiFiDevice device) {
         device.setAvailableProcessors(Runtime.getRuntime().availableProcessors());
-        device.setAvailableSystemMemory(Runtime.getRuntime().totalMemory());
+        device.setTotalSystemMemory(Runtime.getRuntime().totalMemory());
         device.setConsumedMemory(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
         device.setAvailableSystemMemory(Runtime.getRuntime().freeMemory());
         return device;
     }
 
-    private NiFiDevice populateDiskSpaceInfo(ReportingContext reportingContext, NiFiDevice device) {
+    protected NiFiDevice populateDiskSpaceInfo(ReportingContext reportingContext, NiFiDevice device) {
 
         try {
             //NiFiProperties properties = NiFiPropertiesLoader.loadDefaultWithKeyFromBootstrap();

@@ -1,5 +1,14 @@
 package org.apache.nifi.device.registry.resource.device;
 
+import com.codahale.metrics.annotation.Timed;
+import org.apache.nifi.device.registry.GarconConfiguration;
+import org.apache.nifi.device.registry.api.device.Device;
+import org.apache.nifi.device.registry.api.device.MiNiFiCPPDevice;
+import org.apache.nifi.device.registry.api.device.NiFiDevice;
+import org.apache.nifi.device.registry.service.device.DeviceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -8,15 +17,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.apache.nifi.device.registry.GarconConfiguration;
-import org.apache.nifi.device.registry.api.device.MiNiFiCPPDevice;
-import org.apache.nifi.device.registry.api.device.NiFiDevice;
-import org.apache.nifi.device.registry.service.device.DeviceService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.codahale.metrics.annotation.Timed;
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -104,4 +104,12 @@ public class DeviceResource {
         return Response.ok("OK").build();
     }
 
+    @POST
+    @Timed
+    @Path("/device")
+    public Response announceDeviceAvailablitily(Device device) {
+        logger.info("device heartbeat received for hostname {}", device.getHostname());
+        deviceService.addDevice(device);
+        return Response.ok("OK").build();
+    }
 }

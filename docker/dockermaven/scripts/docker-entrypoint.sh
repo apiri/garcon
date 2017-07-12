@@ -4,7 +4,7 @@ echo "This is the docker entrypoint script for Apache NiFi Device Registry that 
 
 # Set MySQL environment parameters
 export MYSQL_ROOT_PASSWORD=nifidevregistry
-export MYSQL_DATABASE=DEVICE_REGISTRY
+export MYSQL_DATABASE=GARCON
 
 # Start MySQL
 /scripts/mysql.sh mysqld --user=root &

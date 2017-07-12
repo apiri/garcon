@@ -1,7 +1,5 @@
 package org.apache.nifi.device.registry.service.device.impl;
 
-import java.util.List;
-
 import org.apache.nifi.device.registry.GarconConfiguration;
 import org.apache.nifi.device.registry.api.device.Device;
 import org.apache.nifi.device.registry.api.device.MiNiFiCPPDevice;
@@ -12,6 +10,8 @@ import org.apache.nifi.device.registry.dao.device.DeviceDAO;
 import org.apache.nifi.device.registry.service.device.DeviceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -77,5 +77,14 @@ public class DeviceServiceImpl
         } catch (Exception ex) {
             logger.error("Error inserting MiNiFiCPPDevice object into {} with exception {}", DBConstants.MINIFI_DEVICE_TABLE, ex.getMessage());
         }
+    }
+
+    public void addDevice(Device device) {
+        try {
+            deviceDAO.insertDevice(device);
+        } catch (Exception ex) {
+            logger.error("Error inserting Device object into {} with exception {}", DBConstants.DEVICE_TABLE, ex.getMessage());
+        }
+
     }
 }

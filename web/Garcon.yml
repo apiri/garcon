@@ -19,7 +19,7 @@ database:
   password: !iAMs00perSecrEET
 
   # the JDBC URL
-  url: jdbc:mysql://localhost:3306/GARCON
+  url: jdbc:mysql://localhost:3307/GARCON
 
   # any properties specific to your JDBC driver:
   properties:
