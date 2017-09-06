@@ -1,7 +1,5 @@
 package org.apache.nifi.device.registry.resource.c2.service;
 
-import java.util.List;
-
 import org.apache.nifi.device.registry.resource.c2.core.C2Payload;
 import org.apache.nifi.device.registry.resource.c2.core.C2Response;
 import org.apache.nifi.device.registry.resource.c2.core.components.Component;
@@ -11,6 +9,8 @@ import org.apache.nifi.device.registry.resource.c2.core.metrics.C2QueueMetrics;
 import org.apache.nifi.device.registry.resource.c2.core.ops.C2Operation;
 import org.apache.nifi.device.registry.resource.c2.dto.C2HUD;
 import org.apache.nifi.device.registry.resource.c2.dto.CreateOperationRequest;
+
+import java.util.List;
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -81,6 +81,7 @@ public interface C2Service {
      */
     C2DeviceFlowFileConfig getDeviceLatestFlowFileConfig(String deviceId);
 
+
     /**
      * Gets the latest flowfile configuration for the minifi device.
      *
@@ -115,4 +116,6 @@ public interface C2Service {
      *  C2HUD object representing the current HUD state.
      */
     C2HUD getC2HUD();
+
+    C2DeviceFlowFileConfig getDeviceFlowFileConfiguration();
 }

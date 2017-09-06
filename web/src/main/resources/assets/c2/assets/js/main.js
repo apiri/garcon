@@ -41,20 +41,23 @@ function getDeviceOperations() {
         }
         for(var i = data.length-1; i >= data.length - 5; i--, j++) {
             var obj = data[i];
-            var status = "RUNNING";
-            if (selectedDeviceRecentOps[j] != obj.acked)
-            {
-                idsToFlash.push( "status" + j);
-            }
-            if (obj.acked == true){
-                status = "FINISHED";
-            }
-            selectedDeviceRecentOps[j] = obj.acked;
+            if (obj) {
+                var status = "RUNNING";
+                if (selectedDeviceRecentOps[j] != obj.acked)
+                {
+                    idsToFlash.push( "status" + j);
+                }
+                if (obj.acked == true){
+                    status = "FINISHED";
+                }
+                selectedDeviceRecentOps[j] = obj.acked;
 
-            $("#deviceOps")
-        	    .append("<tr><td align='left'>" + obj.operation + "</td>"
-        	            + "<td id ='status" + j + "' align='left'>" + status + "</td>"
-        	            + "</tr>");
+                $("#deviceOps")
+                    .append("<tr><td align='left'>" + obj.operation + "</td>"
+                            + "<td id ='status" + j + "' align='left'>" + status + "</td>"
+                            + "</tr>");
+        	 }
+
         }
 
 
@@ -289,12 +292,7 @@ $("#operationsSel").ready(function () {
         operations.hide();
         $('#value').hide();
         operations.empty();
-
-
-
-
-        }
-        else if (operation == "DESCRIBE"){
+     } else if (operation == "DESCRIBE"){
 
                 var options = $("#contentoptions");
                 options.empty();

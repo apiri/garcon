@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mysql.jdbc.StringUtils;
 import org.apache.nifi.device.registry.GarconConfiguration;
 import org.apache.nifi.device.registry.resource.c2.core.C2Payload;
 import org.apache.nifi.device.registry.resource.c2.core.C2Response;
@@ -20,12 +21,12 @@ import org.apache.nifi.device.registry.resource.c2.core.ops.C2Operation;
 import org.apache.nifi.device.registry.resource.c2.core.state.C2State;
 import org.apache.nifi.device.registry.resource.c2.dao.C2ComponentDAO;
 import org.apache.nifi.device.registry.resource.c2.dao.C2DeviceDAO;
-import org.apache.nifi.device.registry.resource.c2.dao.C2DeviceFlowFileConfigDAO;
 import org.apache.nifi.device.registry.resource.c2.dao.C2DeviceFlowFileConfigMappingDAO;
 import org.apache.nifi.device.registry.resource.c2.dao.C2HeartbeatDAO;
 import org.apache.nifi.device.registry.resource.c2.dao.C2OperationDAO;
 import org.apache.nifi.device.registry.resource.c2.dao.C2ProcessMetricsDAO;
 import org.apache.nifi.device.registry.resource.c2.dao.C2QueueMetricsDAO;
+import org.apache.nifi.device.registry.resource.c2.dao.C2ServerFlowFileConfigDAO;
 import org.apache.nifi.device.registry.resource.c2.dto.CreateOperationRequest;
 import org.apache.nifi.device.registry.resource.c2.dto.SupportedOperations;
 import org.apache.nifi.device.registry.resource.c2.service.C2Service;
@@ -78,7 +79,7 @@ public class C2Resource {
     private C2Service c2Service;
 
     public C2Resource(GarconConfiguration conf, C2DeviceDAO c2DeviceDAO, C2QueueMetricsDAO c2QueueMetricsDAO, C2HeartbeatDAO c2HeartbeatDAO,
-                      C2OperationDAO c2OperationDAO, C2ProcessMetricsDAO c2ProcessMetricsDAO, C2ComponentDAO c2ComponentDAO, C2DeviceFlowFileConfigDAO c2DeviceFlowFileConfig, C2DeviceFlowFileConfigMappingDAO c2DeviceFlowFileConfigMapping) {
+                      C2OperationDAO c2OperationDAO, C2ProcessMetricsDAO c2ProcessMetricsDAO, C2ComponentDAO c2ComponentDAO, C2ServerFlowFileConfigDAO c2DeviceFlowFileConfig, C2DeviceFlowFileConfigMappingDAO c2DeviceFlowFileConfigMapping) {
         mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -183,10 +184,9 @@ public class C2Resource {
     @Timed
     @Path("/device/config/{deviceId}")
     public Response getDeviceFlowFileConfiguration(@PathParam("deviceId") String deviceId) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Getting latest FlowFile configuration for device: " + deviceId);
-        }
-        C2DeviceFlowFileConfig ffc = this.c2Service.getDeviceLatestFlowFileConfig(deviceId);
+        logger.info("Getting latest FlowFile configuration for device: " + deviceId);
+        C2DeviceFlowFileConfig ffc = this.c2Service.getDeviceFlowFileConfiguration();
+        logger.info("/device/config/{deviceId} found flow with value {}", ffc != null ? StringUtils.toString(ffc.getConfigFile()) : "ffc was null.");
         return Response.ok(ffc).build();
     }
 

@@ -1,14 +1,8 @@
 package org.apache.nifi.device.registry.resource.c2.service.impl;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.mysql.jdbc.StringUtils;
 import org.apache.nifi.device.registry.resource.c2.core.C2Heartbeat;
 import org.apache.nifi.device.registry.resource.c2.core.C2Payload;
 import org.apache.nifi.device.registry.resource.c2.core.C2Response;
@@ -21,13 +15,27 @@ import org.apache.nifi.device.registry.resource.c2.core.device.SystemInfo;
 import org.apache.nifi.device.registry.resource.c2.core.metrics.C2ProcessMetrics;
 import org.apache.nifi.device.registry.resource.c2.core.metrics.C2QueueMetrics;
 import org.apache.nifi.device.registry.resource.c2.core.ops.C2Operation;
-import org.apache.nifi.device.registry.resource.c2.dao.*;
+import org.apache.nifi.device.registry.resource.c2.dao.C2ComponentDAO;
+import org.apache.nifi.device.registry.resource.c2.dao.C2DeviceDAO;
+import org.apache.nifi.device.registry.resource.c2.dao.C2DeviceFlowFileConfigMappingDAO;
+import org.apache.nifi.device.registry.resource.c2.dao.C2HeartbeatDAO;
+import org.apache.nifi.device.registry.resource.c2.dao.C2OperationDAO;
+import org.apache.nifi.device.registry.resource.c2.dao.C2ProcessMetricsDAO;
+import org.apache.nifi.device.registry.resource.c2.dao.C2QueueMetricsDAO;
+import org.apache.nifi.device.registry.resource.c2.dao.C2ServerFlowFileConfigDAO;
 import org.apache.nifi.device.registry.resource.c2.dto.C2HUD;
 import org.apache.nifi.device.registry.resource.c2.dto.CreateOperationRequest;
 import org.apache.nifi.device.registry.resource.c2.service.C2Service;
 import org.skife.jdbi.v2.sqlobject.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -60,12 +68,12 @@ public class C2ServiceImpl
     private C2OperationDAO c2OperationDAO;
     private C2ProcessMetricsDAO c2ProcessMetricsDAO;
     private C2ComponentDAO c2componentDAO;
-    private C2DeviceFlowFileConfigDAO c2DeviceFlowFileConfigDAO;
+    private C2ServerFlowFileConfigDAO c2DeviceFlowFileConfigDAO;
     private C2DeviceFlowFileConfigMappingDAO c2DeviceFlowFileConfigMappingDAO;
 
     public C2ServiceImpl(C2DeviceDAO c2DeviceDAO, C2QueueMetricsDAO c2QueueMetricsDAO,
-            C2HeartbeatDAO c2HeartbeatDAO, C2OperationDAO c2OperationDAO,
-            C2ProcessMetricsDAO c2ProcessMetricsDAO, C2ComponentDAO c2componentDAO,C2DeviceFlowFileConfigDAO c2DeviceFlowFileConfig, C2DeviceFlowFileConfigMappingDAO c2DeviceFlowFileConfigMapping) {
+                         C2HeartbeatDAO c2HeartbeatDAO, C2OperationDAO c2OperationDAO,
+                         C2ProcessMetricsDAO c2ProcessMetricsDAO, C2ComponentDAO c2componentDAO, C2ServerFlowFileConfigDAO c2DeviceFlowFileConfig, C2DeviceFlowFileConfigMappingDAO c2DeviceFlowFileConfigMapping) {
         this.c2DeviceDAO = c2DeviceDAO;
         this.c2QueueMetricsDAO = c2QueueMetricsDAO;
         this.c2HeartbeatDAO = c2HeartbeatDAO;
@@ -172,14 +180,26 @@ public class C2ServiceImpl
         C2DeviceFlowFileConfigMapping mapping = this.c2DeviceFlowFileConfigMappingDAO.getDeviceFlowFileConfiguration(deviceId);
 
         if (null != mapping){
-            C2DeviceFlowFileConfig ffc = this.c2DeviceFlowFileConfigDAO.getDeviceFlowFileConfiguration(mapping.getFfConfigMappingId());
+            C2DeviceFlowFileConfig ffc = this.c2DeviceFlowFileConfigDAO.getDeviceFlowFileConfiguration();
+            logger.info("Received flow file config with flow={}", StringUtils.toString(ffc.getConfigFile()));
+            logger.info("Received flow file config with flow={}", StringUtils.toString(ffc.getConfigFile()));
+            logger.info("Received flow file config with flow={}", StringUtils.toString(ffc.getConfigFile()));
+            logger.info("Received flow file config with flow={}", StringUtils.toString(ffc.getConfigFile()));
+            logger.info("Received flow file config with flow={}", StringUtils.toString(ffc.getConfigFile()));
             return ffc;
         }
+        logger.info("Latest device flowfile config for id={} was null.", deviceId);
         return null;
     }
 
+    @Override
+    public C2DeviceFlowFileConfig getDeviceFlowFileConfiguration() {
+        return this.c2DeviceFlowFileConfigDAO.getDeviceFlowFileConfiguration();
+    }
+
+
     public String getDeviceFlowFileConfig(String deviceConfigId){
-        C2DeviceFlowFileConfig ffc = this.c2DeviceFlowFileConfigDAO.getDeviceFlowFileConfiguration(Long.valueOf(deviceConfigId));
+        C2DeviceFlowFileConfig ffc = this.c2DeviceFlowFileConfigDAO.getDeviceFlowFileConfiguration();
 
         byte [] configFile = ffc.getConfigFile();
 
